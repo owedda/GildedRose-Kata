@@ -22,6 +22,7 @@ class AllCasesService implements AllCasesServiceInterface
         }
         $case = $this->getFilteredCase($item);
         $case->updateQualityByRules($item);
+
         $item->decreaseSellInBy(1);
     }
 

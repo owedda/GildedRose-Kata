@@ -44,4 +44,52 @@ class AllCasesServiceTest extends TestCase
 
         $this->assertEquals($itemExpected, $item);
     }
+
+    public function testFilterItemCallsMethodUpdateQualityByRulesEqualsTrue(): void
+    {
+        $item = new Item("TEST", 1, 1);
+
+        $mockUnderTest = $this->getMockBuilder(CaseInterface::class)
+            ->onlyMethods(['updateQualityByRules'])
+            ->getMock();
+        $mockUnderTest->expects($this->exactly(1))
+            ->method('updateQualityByRules')
+            ->willReturnOnConsecutiveCalls(
+                $item
+            );
+
+        $mockedCasesFactory = $this->getMockBuilder(GildedRoseCasesFactoryInterface::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getGildedRoseCase'])
+            ->getMock();
+
+        $mockedCasesFactory->method('getGildedRoseCase')->willReturn($mockUnderTest);
+
+        $service = new AllCasesService($mockedCasesFactory);
+        $service->filterItem($item);
+    }
+
+    public function testFilterItemDoesntCallMethodUpdateQualityByRulesWhenNameIsSulfurasEqualsTrue(): void
+    {
+        $item = new Item(GildedRoseConstants::SULFURAS, 1, 1);
+
+        $mockUnderTest = $this->getMockBuilder(CaseInterface::class)
+            ->onlyMethods(['updateQualityByRules'])
+            ->getMock();
+        $mockUnderTest->expects($this->exactly(0))
+            ->method('updateQualityByRules')
+            ->willReturnOnConsecutiveCalls(
+                $item
+            );
+
+        $mockedCasesFactory = $this->getMockBuilder(GildedRoseCasesFactoryInterface::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getGildedRoseCase'])
+            ->getMock();
+
+        $mockedCasesFactory->method('getGildedRoseCase')->willReturn($mockUnderTest);
+
+        $service = new AllCasesService($mockedCasesFactory);
+        $service->filterItem($item);
+    }
 }
